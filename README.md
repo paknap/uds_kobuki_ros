@@ -2,7 +2,25 @@
 
 ![Kobuki schema](docs/Kobuki.png)
 
-## Windows
+## Table of Contents
+
+- [Windows](#windows)
+    - [Install ROS2 Jazzy](#install-ros2-jazzy)
+    - [Install Kobuki Simulator](#install-kobuki-simulator)
+    - [Install UDS Kobuki ROS](#install-uds-kobuki-ros)
+    - [Start Kobuki simulator and ROS2 interface](#start-kobuki-simulator-and-ros2-interface)
+- [Windows + Ubuntu WSL](#windows--wsl-ubuntu)
+    - [Install Kobuki Simulator](#install-kobuki-simulator-1)
+    - [Install Ubuntu 24.04 on WSL2](#install-ubuntu-2404-on-wsl2)
+- [Ubuntu 24.04](#ubuntu-2404)
+    - [Install ROS2 Jazzy](#install-ros2-jazzy-1)
+    - [Install Kobuki Simulator](#install-kobuki-simulator-2)
+    - [Install UDS Kobuki ROS](#install-uds-kobuki-ros-1)
+    - [Start Kobuki simulator and ROS2 interface](#start-kobuki-simulator-and-ros2-interface-1)
+- [Run with Kobuki robot](#run-with-kobuki-robot)
+
+
+## Windows 
 
 ### Install ROS2 Jazzy
 
@@ -110,13 +128,20 @@ Run `kobukiSIM_setup.exe`, this will install the simulator and create shortcut o
 
 ### Start Kobuki simulator and ROS2 interface
 
-1. Start Kobuki Simulator and Start robot
+1. Start Kobuki Simulator and **click "Start robot"**
 2. Start Kobuki ROS
     1. Using shortcut
     2. Using script in terminal `run run.bat`
     3. Using ROS2 `ros2 run uds_kobuki_ros uds_kobuki_ros`
+3. [Optional] Test SIM <-> ROS communication interface
+    1. Test ROS -> SIM communication
+        
+        ```bash
+        ros2 run rviz2 rviz2
+        ```
+    In Displays pane click "Add" -> "By topic" -> "LaserScan"
 
-## Windows + Ubuntu WSL
+## Windows + WSL Ubuntu
 
 Run Kobuki Simulator on Windows and control it from ROS network running on WSL Ubuntu.
 
@@ -127,24 +152,31 @@ Run `kobukiSIM_setup.exe`, this will install the simulator and create shortcut o
 ### [Install Ubuntu 24.04 on WSL2](https://documentation.ubuntu.com/wsl/en/latest/howto/install-ubuntu-wsl2/)
 
 1. Install WSL
-    ```bash
+    
+    ```cmd
     wsl --install
-
     ```
 
 2. Install Ubuntu 24.04 on WSL
-    ```
+    
+    ```cmd
     wsl --install -d Ubuntu-24.04
     ```
 
 3. Run and configure Ubuntu
-    ```bash
-    > wsl.exe -d Ubuntu-24.04
-    $ sudo apt update
-    $ sudo apt full-upgrade
+    
+    ```cmd
+    wsl.exe -d Ubuntu-24.04
     ```
 
-4. Continue with steps below for ROS2 and UDS Kobuki ROS package installation
+    ```bash
+    sudo apt update
+    sudo apt full-upgrade
+    ```
+
+4. In WSL, continue with steps for ROS2 and UDS Kobuki ROS package installation
+    * [Install ROS2 Jazzy](#install-ros2-jazzy-1)
+    * [Install UDS Kobuki ROS](#install-uds-kobuki-ros-1)
 
 5. Update Kobuki SIM IP address
     * In Windows CMD run `ipconfig` and read `Ethernet adapter vEthernet(WSL):->IPv4 Address`
@@ -154,8 +186,10 @@ Run `kobukiSIM_setup.exe`, this will install the simulator and create shortcut o
     self.declare_parameter('ip_address', '127.0.0.1')
     ```
 6. Start
-    * Kobuki Simulator by launching the `kobuki simulator` shortcut on Windows
-    * Kobuki ROS2 Interface according to steps bellow 
+    * Kobuki Simulator by launching the `kobuki simulator` shortcut on Windows and **click "Start robot"**.
+    * Kobuki ROS2 Interface according to [steps bellow](#start-kobuki-simulator-and-ros2-interface-1).
+
+*Note: In case of problems with communication between the simulator running on Windows and ROS network running on WSL, [install the simulator on WSL](#install-kobuki-simulator-2).*
 
 
 ## Ubuntu 24.04
@@ -242,21 +276,26 @@ ROS2 Jazzy is supported at Tier 1 on Ubuntu 24.04. On other versions of linux, i
     ```
 
 2. Build and install Kobuki Simulator  
-    * check and update OpenCV path - the path in the `kobukiSIM.pro` (line 58) has to match the OpenCV installation path found by
-    ```bash
-    sudo find / -type f -name core.hpp | grep opencv
-    ```
+    * check and update OpenCV path
+        
+        ```bash
+        sudo find / -type f -name core.hpp | grep opencv
+        ```
+
+        The output should (among others) contain path to OpenCV installation (e. g. `/usr/include/opencv4/`). This path has to match the OpenCV path in the `kobukiSIM/kobukiSIM.pro` file (line 58)
+    
     * compile and install
-    ```bash
-    cd uds_kobuki_sim
+    
+        ```bash
+        cd uds_kobuki_sim
 
-    # Create Makefile from Qt project and build the executable `kobukiSIM`
-    qmake
-    make
+        # Create Makefile from Qt project and build the executable `kobukiSIM`
+        qmake
+        make
 
-    # Install executable and other files to `/opt/kobuki/sim/`
-    sudo make install
-    ```
+        # Install executable and other files to `/opt/kobuki/sim/`
+        sudo make install
+        ```
 
 ### Install UDS Kobuki ROS
 
@@ -307,7 +346,7 @@ ROS2 Jazzy is supported at Tier 1 on Ubuntu 24.04. On other versions of linux, i
 
 ### Start Kobuki simulator and ROS2 interface
 
-1. Start Kobuki Simulator and Start robot
+1. Start Kobuki Simulator and **click "Start robot"**
     1. Using shortcut
     2. Using executable `cd /opt/kobuki/sim && ./kobukiSIM`
 2. Start Kobuki ROS
@@ -315,7 +354,23 @@ ROS2 Jazzy is supported at Tier 1 on Ubuntu 24.04. On other versions of linux, i
     2. Using script in terminal `/opt/kobuki/install/uds_kobuki_ros/share/uds_kobuki_ros/run.sh`
     3. Using ROS2 `ros2 run uds_kobuki_ros uds_kobuki_ros`
 3. [Optional] Test SIM <-> ROS communication interface
-    ```bash
-    sudo apt install ros-jazzy-rqt-robot-steering
-    ros2 run rqt_robot_steering rqt_robot_steering
-    ```
+    1. Test ROS -> SIM communication
+        
+        ```bash
+        ros2 run rviz2 rviz2
+        ```
+    In Displays pane click "Add" -> "By topic" -> "LaserScan"
+
+    2. Test SIM -> ROS communication
+        
+        ```bash
+        sudo apt install ros-jazzy-rqt-robot-steering
+        ros2 run rqt_robot_steering rqt_robot_steering
+        ```
+
+    ## Run with Kobuki robot
+    1. Change IP address - set the address of the Kobuki device
+        1. uds_kobuki_ros run command in [`run.bat`](./deploy/run.bat) (Windows) / [`run.sh`](./deploy/run.sh)
+        2. UDP_IP constant in [`defines.py`](./uds_kobuki_ros/defines.py)
+    2. Build and install `uds_kobuki_ros` package
+    3. Power on the robot and run the `uds_kobuki_ros` node

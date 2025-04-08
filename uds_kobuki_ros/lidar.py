@@ -22,17 +22,17 @@ from .defines import *
 
 def parse_lidar_message(data):
     result = TLaserMeasurement()
-    result.numberOfScans = len(data) // 24
+    result.numberOfScans = len(data) // LaserData.MSG_SIZE
 
     for i in range(result.numberOfScans):
-        offset = i * 24
+        offset = i * LaserData.MSG_SIZE
         laser_data = LaserData()
-        # scanQuality is of type int, which is 4 bytes padded by 4 bytes Big Endian
-        laser_data.scanQuality = int.from_bytes(data[offset + 4:offset + 8], byteorder='big')
-        # scanAngle is of type double, which is 8 bytes Big Endian
-        laser_data.scanAngle = struct.unpack('<d', data[offset + 8:offset + 16])[0]
-        # scanDistance is of type double, which is 8 bytes Big Endian
-        laser_data.scanDistance = struct.unpack('<d', data[offset + 16:offset + 24])[0]
+        # scanQuality is of type int, which is 4 bytes Big Endian
+        laser_data.scanQuality = int.from_bytes(data[offset:offset + 4], byteorder='big')
+        # scanAngle is of type float, which is 4 bytes Big Endian
+        laser_data.scanAngle = struct.unpack('<f', data[offset + 4:offset + 8])[0]
+        # scanDistance is of type float, which is 4 bytes Big Endian
+        laser_data.scanDistance = struct.unpack('<f', data[offset + 8:offset + 12])[0]
         result.Data.append(laser_data)
     
     return result
@@ -51,7 +51,7 @@ def main():
         while True:
             # Receive the response from the server
             # TODO: Implement timeout 
-            response, _ = lidar_sock.recvfrom(1000*24)  # Buffer size is 1000 * LaserData (24 bytes)
+            response, _ = lidar_sock.recvfrom(1000*LaserData.MSG_SIZE)  # Buffer size is 1000 * LaserData (16 bytes)
             lidar_data = parse_lidar_message(response)
 
             print("-" * 20)

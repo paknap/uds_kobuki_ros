@@ -151,7 +151,7 @@ class Kobuki(Node):
     
     def lidar_udp_receiver_callback(self):
         while not self.stop_flag:
-            response, _ = self.lidar_sock.recvfrom(1000 * 24)
+            response, _ = self.lidar_sock.recvfrom(1000 * LaserData.MSG_SIZE)
 
             with self.lock:
                 self.lidar_data = parse_lidar_message(response)
@@ -216,8 +216,8 @@ class Kobuki(Node):
         # Sort to angles ascending
         angles, msg.ranges = zip(*sorted(zip([x.scanAngle for x in self.lidar_data.Data], [x.scanDistance * 1e-3 for x in self.lidar_data.Data]), reverse=True))
 
-        msg.angle_min = math.radians(angles[-1])
-        msg.angle_max = math.radians(angles[0])
+        msg.angle_min = math.radians(360.0 - angles[0])
+        msg.angle_max = math.radians(360.0 - angles[-1])
         msg.angle_increment = (msg.angle_max - msg.angle_min) / (self.lidar_data.numberOfScans - 1)
 
         msg.time_increment = 0.0

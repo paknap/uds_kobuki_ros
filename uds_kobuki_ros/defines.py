@@ -81,6 +81,8 @@ class LaserData:
         self.scanQuality: int = 0
         self.scanAngle: float = 0.0
         self.scanDistance: float = 0.0
+
+    MSG_SIZE = 16
         
     def __str__(self):
         return f'Quality: {self.scanQuality}, Angle: {self.scanAngle}, Distance: {self.scanDistance}'
